@@ -1,4 +1,4 @@
-package com.example.sylviehu.todolist.utils;
+package com.example.sylviehu.todolist;
 
 
 import android.content.Context;
@@ -40,11 +40,11 @@ public class TodoListAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        View view = LayoutInflater.from(context).inflate(R.layout.main_list_item, parent, false);
+        if (convertView == null) {
+            convertView = LayoutInflater.from(context).inflate(R.layout.main_list_item, parent, false);
+        }
         Todo todo = data.get(position);
-
-        ((TextView) view.findViewById(R.id.main_list_item_text)).setText(todo.text);
-
-        return view;
+        ((TextView) convertView.findViewById(R.id.main_list_item_text)).setText(todo.text);
+        return convertView;
     }
 }
