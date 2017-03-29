@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import com.example.sylviehu.todolist.R;
 import com.example.sylviehu.todolist.models.Todo;
 
 import java.util.List;
@@ -40,11 +39,21 @@ public class TodoListAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+        ViewHolder viewHolder;
         if (convertView == null) {
             convertView = LayoutInflater.from(context).inflate(R.layout.main_list_item, parent, false);
+            viewHolder = new ViewHolder();
+            viewHolder.todoText = (TextView) convertView.findViewById(R.id.main_list_item_text);
+            convertView.setTag(viewHolder);
+        } else {
+            viewHolder = (ViewHolder) convertView.getTag();
         }
         Todo todo = data.get(position);
-        ((TextView) convertView.findViewById(R.id.main_list_item_text)).setText(todo.text);
+        viewHolder.todoText.setText(todo.text);
         return convertView;
+    }
+
+    private static class ViewHolder {
+        TextView todoText;
     }
 }
