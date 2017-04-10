@@ -1,5 +1,6 @@
 package com.example.sylviehu.todolist;
 
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -15,6 +16,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+    public static final int REQ_CODE_TODO_EDIT = 100;
+    private static final String TODOS = "todos";
+    private TodoListAdapter adapter;
+    private List<Todo> todos;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(MainActivity.this, "Fab clicked", Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(MainActivity.this, TodoEditActivity.class);
             }
         });
 

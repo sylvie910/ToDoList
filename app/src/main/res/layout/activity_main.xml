@@ -10,7 +10,8 @@
         android:id="@+id/main_list_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:divider="@color/list_divider_color"/>
+        android:divider="#ffeeeeee"
+        android:dividerHeight="1dp"/>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
