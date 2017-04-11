@@ -19,6 +19,7 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 
 import com.example.sylviehu.todolist.models.Todo;
+import com.example.sylviehu.todolist.utils.AlarmUtils;
 import com.example.sylviehu.todolist.utils.DateUtils;
 import com.example.sylviehu.todolist.utils.UIUtils;
 
@@ -27,6 +28,7 @@ import org.w3c.dom.Text;
 import java.util.Calendar;
 import java.util.Date;
 
+@SuppressWarnings("ConstantConditions")
 public class TodoEditActivity extends AppCompatActivity implements
         DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
 
@@ -59,6 +61,12 @@ public class TodoEditActivity extends AppCompatActivity implements
         return super.onOptionsItemSelected(item);
     }
 
+    private void setupActionbar() {
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setElevation(0);
+        setTitle(null);
+    }
+
     private void setupUI() {
         setContentView(R.layout.activity_todo_edit);
         setupActionbar();
@@ -87,56 +95,13 @@ public class TodoEditActivity extends AppCompatActivity implements
             dateTv.setText(DateUtils.dateToStringDate(remindDate));
             timeTv.setText(DateUtils.dateToStringTime(remindDate));
         } else {
-            dateTv.setText("Set date");
-            timeTv.setText("Set time");
+            dateTv.setText(R.string.set_date);
+            timeTv.setText(R.string.set_time);
         }
 
         setupDatePicker();
         setupCheckbox();
         setupSaveButton();
-    }
-
-    private void setupSaveButton() {
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.todo_detail_done);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                saveAndExit();
-            }
-        });
-    }
-
-    private void saveAndExit() {
-        if (todo == null) {
-            todo = new Todo(todoEdit.getText().toString(), remindDate);
-        } else {
-            todo.text = todoEdit.getText().toString();
-            todo.remindDate = remindDate;
-        }
-        todo.done = completeCb.isChecked();
-
-        Intent result = new Intent();
-        result.putExtra(KEY_TODO, todo);
-        setResult(Activity.RESULT_OK, result);
-        finish();
-    }
-
-    private void setupCheckbox() {
-        completeCb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                UIUtils.setTextViewStrikeThrough(todoEdit, isChecked);
-                todoEdit.setTextColor(isChecked ? Color.GRAY : Color.WHITE);
-            }
-        });
-
-        View completeWrapper = findViewById(R.id.todo_detail_complete_wrapper);
-        completeWrapper.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                completeCb.setChecked(!completeCb.isChecked());
-            }
-        });
     }
 
     private void setupDatePicker() {
@@ -169,25 +134,32 @@ public class TodoEditActivity extends AppCompatActivity implements
         });
     }
 
-    private Calendar getCalenderFromRemindDate() {
-        Calendar c = Calendar.getInstance();
-        if (remindDate != null) {
-            c.setTime(remindDate);
-        }
-        return c;
+    private void setupCheckbox() {
+        completeCb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                UIUtils.setTextViewStrikeThrough(todoEdit, isChecked);
+                todoEdit.setTextColor(isChecked ? Color.GRAY : Color.WHITE);
+            }
+        });
+
+        View completeWrapper = findViewById(R.id.todo_detail_complete_wrapper);
+        completeWrapper.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                completeCb.setChecked(!completeCb.isChecked());
+            }
+        });
     }
 
-    private void delete() {
-        Intent result = new Intent();
-        result.putExtra(KEY_TODO_ID, todo.id);
-        setResult(Activity.RESULT_OK, result);
-        finish();
-    }
-
-    private void setupActionbar() {
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setElevation(0);
-        setTitle(null);
+    private void setupSaveButton() {
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.todo_detail_done);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                saveAndExit();
+            }
+        });
     }
 
     @Override
@@ -207,5 +179,39 @@ public class TodoEditActivity extends AppCompatActivity implements
 
         remindDate = c.getTime();
         timeTv.setText(DateUtils.dateToStringTime(remindDate));
+    }
+
+    private void saveAndExit() {
+        if (todo == null) {
+            todo = new Todo(todoEdit.getText().toString(), remindDate);
+        } else {
+            todo.text = todoEdit.getText().toString();
+            todo.remindDate = remindDate;
+        }
+        todo.done = completeCb.isChecked();
+
+        if (remindDate != null) {
+            AlarmUtils.setAlarm(this, remindDate);
+        }
+
+        Intent result = new Intent();
+        result.putExtra(KEY_TODO, todo);
+        setResult(Activity.RESULT_OK, result);
+        finish();
+    }
+
+    private Calendar getCalenderFromRemindDate() {
+        Calendar c = Calendar.getInstance();
+        if (remindDate != null) {
+            c.setTime(remindDate);
+        }
+        return c;
+    }
+
+    private void delete() {
+        Intent result = new Intent();
+        result.putExtra(KEY_TODO_ID, todo.id);
+        setResult(Activity.RESULT_OK, result);
+        finish();
     }
 }
